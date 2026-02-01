@@ -26,7 +26,10 @@ echo "Backup created: $SIZE"
 # Sync to Google Drive (if configured)
 if rclone listremotes | grep -q "$DRIVE_REMOTE"; then
     echo "Syncing to Google Drive..."
-    rclone sync "$BACKUP_DIR/$DRIVE_REMOTE:$DRIVE_PATH" --verbose
+    # Create folder structure in Drive if needed
+    rclone mkdir "$DRIVE_REMOTE:$DRIVE_PATH" 2>/dev/null || true
+    # Copy the zip file to Drive
+    rclone copy "$BACKUP_DIR/$BACKUP_NAME" "$DRIVE_REMOTE:$DRIVE_PATH/" --verbose
     echo "Backup synced to Google Drive"
 else
     echo "Google Drive remote '$DRIVE_REMOTE' not configured. Run 'rclone config' to set up."
